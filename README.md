@@ -6,7 +6,7 @@ This project is a Node.js application that integrates with Shopify to manage war
 
 - Node.js (version >= 18)
 - npm (version >= 9)
-- PostgreSQL database
+- MYSQL database
 
 ## Installation
 
