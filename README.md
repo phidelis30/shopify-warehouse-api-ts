@@ -43,7 +43,7 @@ This project is a Node.js application that integrates with Shopify to manage war
       WAREHOUSE_API_URL=your_warehouse_api_url
       WAREHOUSE_API_KEY=your_warehouse_api_key
       PORT=3000
-      DATABASE_URL="postgresql://user:password@host:port/database?schema=public"
+      DATABASE_URL="mysql://root:@localhost:3306/mydb"
       ```
 
 4.  Set up the database:
