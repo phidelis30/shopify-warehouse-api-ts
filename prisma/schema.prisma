@@ -1,0 +1,78 @@
+datasource db {
+  provider = "mysql" // Updated for MySQL
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model ShopifyOrder {
+  id                    BigInt   @id @default(autoincrement())
+  shopifyOrderId        BigInt   @unique
+  orderNumber          Int      @unique
+  contactEmail         String?
+  createdAt            DateTime @map("created_at")
+  cancelledAt          DateTime? @map("cancelled_at")
+  financialStatus      String
+  fulfillmentStatus    String?
+  currency             String
+  totalPrice           Decimal  @db.Decimal(10,2) @map("total_price")
+  subtotalPrice        Decimal  @db.Decimal(10,2) @map("subtotal_price")
+  totalDiscounts       Decimal  @db.Decimal(10,2)  @map("total_discounts")
+  totalTax             Decimal  @db.Decimal(10,2)  @map("total_tax")
+  totalShipping        Decimal  @db.Decimal(10,2)  @map("total_shipping_price")
+  buyerAcceptsMarketing Boolean @map("buyer_accepts_marketing")
+  testOrder            Boolean  @map("test")
+  customer             Customer? @relation(fields: [customerId], references: [id])
+  customerId           BigInt?
+  lineItems            LineItem[]
+  shippingAddress      Address?  @relation("ShippingAddress", fields: [shippingAddressId], references: [id])
+  shippingAddressId    BigInt?
+  billingAddress       Address?  @relation("BillingAddress", fields: [billingAddressId], references: [id])
+  billingAddressId     BigInt?
+}
+
+model Customer {
+  id                   BigInt  @id @default(autoincrement())
+  shopifyCustomerId    BigInt  @unique
+  email                String?
+  firstName            String?
+  lastName             String?
+  verifiedEmail        Boolean
+  orders               ShopifyOrder[]
+  defaultAddress       Address? @relation("CustomerDefaultAddress", fields: [defaultAddressId], references: [id])
+  defaultAddressId     BigInt?
+}
+
+model LineItem {
+  id                   BigInt  @id @default(autoincrement())
+  shopifyLineItemId    BigInt  @unique
+  orderId              BigInt  @map("shopify_order_id")
+  order                ShopifyOrder @relation(fields: [orderId], references: [id])
+  productId            BigInt?
+  variantId            BigInt?
+  name                 String
+  price                Decimal @db.Decimal(10,2)
+  quantity             Int
+  requiresShipping     Boolean
+}
+
+model Address {
+  id                   BigInt  @id @default(autoincrement())
+  firstName            String?
+  lastName             String?
+  company              String?
+  address1             String
+  address2             String?
+  city                 String
+  province             String?
+  country              String
+  zip                  String
+  phone                String?
+  countryCode          String @map("country_code")
+  provinceCode         String? @map("province_code")
+  shippingOrders       ShopifyOrder[] @relation("ShippingAddress")
+  billingOrders        ShopifyOrder[] @relation("BillingAddress")
+  customersDefault     Customer[] @relation("CustomerDefaultAddress")
+}
